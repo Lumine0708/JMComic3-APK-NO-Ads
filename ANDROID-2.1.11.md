@@ -40,7 +40,7 @@ JM-REA 原方案是在远程版本查询处返回内置版本；本分支采用�
 
 ## 自用安装
 
-本地 APK：`JMComic3v2.1.11-20261113v1.apk`，SHA-256：`5cc5e940a22d52899650db003947546ea3ae37763dc5cb6df109d679b5413342`。
+本地 APK：`JMComic3v2.1.11-20261113v3.apk`，SHA-256：`52498ac0b85061f28023b603fe41505f33a3f572f2e1c9f9105e6f9b898def5a`。
 
 统一使用本地 `signing/jmcomic-noads.keystore`（别名 `jmcomic-noads`，storepass/keypass 均为 `android`，证书 SHA-256 `62:E9:A2:C6:C2:FE:64:EA:66:26:46:C5:BA:5C:9C:95:C8:3C:E1:9F:CF:FC:1C:22:3F:A6:F4:D2:9B:AE:21:4B`，私钥不提交仓库）签名，完整参数与命令见 [README 的签名一节](README.md#-签名)。该签名与早期 JM-REA 签名的自用包、官方包、上游包都不兼容，切换后首次安装需卸载（会清空本地数据）；此后同签名的包可直接覆盖升级。
 
