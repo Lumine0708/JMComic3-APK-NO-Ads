@@ -28,6 +28,19 @@ JM-REA 原方案是在远程版本查询处返回内置版本；本分支采用�
 
 有补签资格时直接进入原有日期选择模式，移除广告弹窗及 5 秒倒计时。原有额度、漏签日期限制、补签接口和成功后的额度累计保留。
 
+## 6. 阅读器翻章竖条
+
+阅读器右侧新增固定竖条，点击直接调用现有的 `handlePageChange("next")`（内部已处理关 express、按 `detailList.series` 找下一章、`replace` 跳转、写阅读记录），未新增状态、手势或接口。
+
+- 唤起与底栏共用 `closeNav`：底栏收起时竖条不渲染，点屏幕唤出 UI 时一起出现。不做章末 overscroll 翻章手势。
+- 渲染条件 `!closeNav && changeCurrentPage.next && !isLoading`；无下一章、加载中不出现。`changeCurrentPage.next` 为 false 的三种来源（series 为空、当前章不在 series、确实最后一章）统一按“不出现”处理，不给「已到最后一章」提示——项目已有 `readTrack` 弹窗覆盖最后一章末页的提示。
+- 位置：`fixed right-0`，`top:16%` / `bottom:18%` / `width:48`（行内 style，Tailwind 为预编译产物）；`z-20`，低于底栏同级、低于章节 z-50 / 评论 z-30 / 顶栏 z-40，弹层打开时被遮住。
+- 只改 `7522.e48de9ca.chunk.js` 一处插入；`.map` 未同步，仍为官方原始源码。
+
+实测（小米 13 / 2211133C，Android 16）：纵向模式点击竖条后进度归 1、总页数由 222 变 181（确认已换章）；底栏收起时竖条消失，重新唤出后恢复；单本作品（`next` 为 false）不渲染竖条；横向模式竖条正常渲染。未验证：加载中态、章节/评论弹层遮挡、从竖条起手横滑。
+
+方案与取舍记录见 [READER-CHAPTER-STRIP.md](READER-CHAPTER-STRIP.md)。
+
 ## 构建与验证
 
 - 官方样本 SHA-256：`4a36ec11089eb04972d6f833f0047a003a5152c384cabdc7c249ff4268f9d3d7`。
@@ -40,7 +53,7 @@ JM-REA 原方案是在远程版本查询处返回内置版本；本分支采用�
 
 ## 自用安装
 
-本地 APK：`JMComic3v2.1.11-20261113v3.apk`，SHA-256：`52498ac0b85061f28023b603fe41505f33a3f572f2e1c9f9105e6f9b898def5a`。
+本地 APK：`JMComic3v2.1.11-20261114v5.apk`，SHA-256：`becf18f4261acdb65643e2309d18ac3d06e223eea9577870b50657df43561cd7`（含第 6 节翻章竖条；v3 为 `52498ac0b85061f28023b603fe41505f33a3f572f2e1c9f9105e6f9b898def5a`）。
 
 统一使用本地 `signing/jmcomic-noads.keystore`（别名 `jmcomic-noads`，storepass/keypass 均为 `android`，证书 SHA-256 `62:E9:A2:C6:C2:FE:64:EA:66:26:46:C5:BA:5C:9C:95:C8:3C:E1:9F:CF:FC:1C:22:3F:A6:F4:D2:9B:AE:21:4B`，私钥不提交仓库）签名，完整参数与命令见 [README 的签名一节](README.md#-签名)。该签名与早期 JM-REA 签名的自用包、官方包、上游包都不兼容，切换后首次安装需卸载（会清空本地数据）；此后同签名的包可直接覆盖升级。
 
