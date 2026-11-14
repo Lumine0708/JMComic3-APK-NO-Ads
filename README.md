@@ -2,6 +2,8 @@
 
 如题，本项目是 JMComic3 的去广告 / 优化版
 
+本 fork 的 Android v2.1.11 自测分支改动与验证记录见 [ANDROID-2.1.11.md](ANDROID-2.1.11.md)。
+
 真正的纯净版喵
 
 请不要将项目文件用于盈利哦
@@ -53,7 +55,28 @@ git clone https://github.com/Tom6814/jmcomic-apk-mod-skill.git
 ✅ 建议流程：
 - 使用 `zip` / Python 脚本重新打包，确保 `resources.arsc` 与图片资源以 `STORED` 方式写入
 - 使用 `zipalign` 做 4 字节对齐
-- 使用 `apksigner` 进行 V1/V2 签名
+- 使用 `apksigner` 进行 V1/V2/V3 签名
+- APK 命名统一为 `{name}{version}-{datetime}{vx}`，例如 `JMComic3v2.1.11-20261113v1.apk`（`datetime` 为 `YYYYMMDD`，`vx` 为当天第几版）
+
+### 🔑 签名
+
+本仓库自用包统一使用本地 `signing/jmcomic-noads.keystore`（PKCS12，自签名，私钥不提交仓库）：
+
+| 项 | 值 |
+|---|---|
+| keystore / alias | `signing/jmcomic-noads.keystore` / `jmcomic-noads` |
+| storepass / keypass | `android` |
+| 证书 | `CN=JMComic3-APK-NO-Ads, OU=Dev, O=Lumine0708, L=NA, ST=NA, C=CN` |
+| 证书 SHA-256 | `62:E9:A2:C6:C2:FE:64:EA:66:26:46:C5:BA:5C:9C:95:C8:3C:E1:9F:CF:FC:1C:22:3F:A6:F4:D2:9B:AE:21:4B` |
+
+```bash
+apksigner sign --ks signing/jmcomic-noads.keystore --ks-key-alias jmcomic-noads \
+  --ks-pass pass:android --key-pass pass:android \
+  --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true \
+  --out out.apk aligned.apk
+```
+
+该签名与早期 REA 签名的自用包、官方包都不兼容，换签名后首次安装需先卸载（会清空本地数据）；之后同签名的包可直接覆盖升级。keystore 只保存在本地，用上表指纹核对即可确认包是否由该签名签出。
 
 ---
 
